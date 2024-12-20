@@ -4,7 +4,8 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head />
-      <body className="antialiased">
+      <link href="https://example.com/fonts/prestandard.css" rel="stylesheet" />
+      <body>
         <Main />
         <NextScript />
       </body>

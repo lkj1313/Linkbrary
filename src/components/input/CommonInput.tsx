@@ -4,10 +4,19 @@ interface CommonInputProps {
   type: string; // input 타입 (예: text, password)
   value: string; // input 값
   onChange: (value: string) => void; // 값 변경 핸들러
+  onFocus?: () => void; // 포커스 핸들러
+  onBlur?: () => void; // 블러 핸들러
   children: any;
 }
 
-const CommonInput = ({ type, value, onChange, children }: CommonInputProps) => {
+const CommonInput = ({
+  type,
+  value,
+  onChange,
+  children,
+  onFocus,
+  onBlur,
+}: CommonInputProps) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const togglePasswordVisibility = () => {
@@ -23,6 +32,8 @@ const CommonInput = ({ type, value, onChange, children }: CommonInputProps) => {
         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
           onChange(e.target.value)
         }
+        onFocus={onFocus} // 포커스 이벤트 전달
+        onBlur={onBlur} // 블러 이벤트 전달
         className="w-[400px] h-[60px] rounded-md py-[18px] px-[20px] pr-[40px] border border-gray-300 "
       />
       {type === "password" && (

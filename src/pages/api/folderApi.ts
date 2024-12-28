@@ -47,7 +47,12 @@ export const fetchAllLinks = async () => {
   }
 
   const data = await response.json();
-  return data.list;
+  const uniqueLinks = Array.from(
+    new Map(
+      data.list.map((link: { title: string }) => [link.title, link]) // url을 키로 사용
+    ).values()
+  );
+  return uniqueLinks as Link[];
 };
 
 export const fetchLinksByFolder = async (folderId: number): Promise<Link[]> => {

@@ -40,7 +40,6 @@ const LinksPage = () => {
       activeFolderId !== null
         ? fetchLinksByFolder(activeFolderId)
         : fetchAllLinks(), // Fetcher 함수
-    enabled: true, // 폴더 ID가 있을 때만 쿼리 실행
   });
 
   // ------------------함수 ----------------- //
@@ -137,9 +136,9 @@ const LinksPage = () => {
     );
 
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       <Header />
-      <main className="flex flex-col gap-[40px] justify-center items-center">
+      <main className="flex  flex-col gap-[40px] justify-center items-center">
         {/* 폴더 목록 섹션 */}
         <section className="h-[219px] pt-[60px] pb-[90px] px-[320px] bg-gray-100 flex items-center justify-center ">
           <AddLinkInput

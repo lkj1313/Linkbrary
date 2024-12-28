@@ -1,50 +1,49 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { formatDistanceToNow } from "date-fns";
-import { format } from "date-fns";
-import { ko } from "date-fns/locale";
-import Footer from "@/components/footer/Footer";
+
+// 컴포넌트 import
 import Header from "@/components/header/Header";
+import Footer from "@/components/footer/Footer";
 import AddLinkInput from "@/components/linksPage/AddLinkInput";
 import FolderList from "@/components/linksPage/FolderList";
 import FolderTitle from "@/components/linksPage/FolderTitle";
 import FolderAddButton from "@/components/linksPage/FolderAddButton";
 import LinkList from "@/components/linksPage/LinkList";
-import { fetchAllLinks, fetchFolders } from "../api/folderApi";
-
-function timeAgo(createdAt: string): string {
-  return formatDistanceToNow(new Date(createdAt), {
-    addSuffix: true,
-    locale: ko,
-  });
-}
-import { Folder, Link } from "@/utilitys/types";
 import LoadingSpinner from "@/components/loadingSpinner/LoadingSpinner";
-function formatDate(createdAt: string): string {
-  return format(new Date(createdAt), "yyyy.MM.dd"); // "2024.12.26" 형식
-}
+
+// 유틸리티 및 API import
+import { timeAgo, formatDate } from "@/utilitys/dataUtils";
+import {
+  fetchAllLinks,
+  fetchFolders,
+  fetchLinksByFolder,
+} from "../api/folderApi";
+import { Folder } from "@/utilitys/types";
+
 const LinksPage = () => {
   const [activeFolderId, setActiveFolderId] = useState<number | null>(null); // 활성화된 폴더 ID
-  const [links, setLinks] = useState<Link[]>([]); // 폴더의 링크 데이터 관리
-
   const [inputLink, setInputLink] = useState<string>(""); // 입력받은 링크 관리
-  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-  // React Query 훅을 사용하여 데이터 가져오기
-  const {
-    data: folders = [],
-    isLoading,
-    isError,
-    error,
-  } = useQuery<Folder[], Error>({
+
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL; // baseUrl
+
+  //---------------리액트 라우터 ------------//
+  // React Query 훅을 사용하여 모든 폴더 가져오기
+  const { data: folders = [], isLoading } = useQuery<Folder[], Error>({
     queryKey: ["folders"], // Query Key
     queryFn: fetchFolders, // Fetcher 함수
   });
-  const { data: allLinks = [], isLoading: isLinksLoading } = useQuery({
-    queryKey: ["links"],
-    queryFn: fetchAllLinks,
+
+  //폴더에 따라 링크 가져오기
+  const { data: links = [], isLoading: isLinksLoading } = useQuery({
+    queryKey: ["links", activeFolderId], // Query Key
+    queryFn: () =>
+      activeFolderId !== null
+        ? fetchLinksByFolder(activeFolderId)
+        : fetchAllLinks(), // Fetcher 함수
+    enabled: true, // 폴더 ID가 있을 때만 쿼리 실행
   });
 
-  // 링크 추가 함수
+  // ------------------함수 ----------------- //
   const handleAddLink = async () => {
     if (activeFolderId === null) {
       alert("폴더를 선택해주세요.");
@@ -125,53 +124,17 @@ const LinksPage = () => {
       alert("폴더 추가 중 문제가 발생했습니다.");
     }
   };
-
   const handleFolderClick = (id: number | null) => {
-    setActiveFolderId(id); // 클릭된 폴더 ID 저장
-    if (id === null) {
-      // 전체 버튼 클릭 시 모든 링크 데이터를 표시
-      setLinks(allLinks);
-    } else {
-      // 폴더 ID가 null이 아닐 경우 해당 폴더의 링크 데이터 가져오기
-      fetchLinks(id);
-    }
+    setActiveFolderId(id); // 활성화된 폴더 ID 업데이트
   };
-  const fetchLinks = async (folderId: number) => {
-    try {
-      const accessToken = localStorage.getItem("accessToken");
 
-      if (!accessToken) {
-        alert("로그인이 필요합니다.");
-        return;
-      }
-
-      const response = await fetch(`${BASE_URL}/folders/${folderId}/links`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.message || "링크 데이터를 가져오는 데 실패했습니다."
-        );
-      }
-
-      const data = await response.json();
-      setLinks(data.list || []); // Objectlist 배열을 상태에 저장
-    } catch (error) {
-      console.error("Error fetching links:", error);
-    }
-  };
-  // 전체 링크가 로드되었을 때 초기 설정
-  useEffect(() => {
-    if (!isLinksLoading && activeFolderId === null) {
-      setLinks(allLinks); // 전체 링크를 기본 값으로 설정
-    }
-  }, [allLinks, isLinksLoading, activeFolderId]);
-  if (isLoading) return <LoadingSpinner />;
+  // 버튼 컴포넌트 isloading?
+  if (isLoading)
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-gray-100 z-50">
+        <LoadingSpinner />
+      </div>
+    );
 
   return (
     <div>
@@ -204,8 +167,14 @@ const LinksPage = () => {
           </div>
         </section>{" "}
         {/* 링크리스트 섹션 */}
-        <section className="w-[1060px] flex flex-wrap gap-[20px] ">
-          <LinkList links={links} timeAgo={timeAgo} formatDate={formatDate} />
+        <section className="w-[1060px] flex flex-wrap gap-[20px]">
+          {isLinksLoading ? (
+            <div className="w-full flex justify-center items-center">
+              <LoadingSpinner />
+            </div>
+          ) : (
+            <LinkList links={links} timeAgo={timeAgo} formatDate={formatDate} />
+          )}
         </section>
       </main>
       <Footer />

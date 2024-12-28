@@ -1,4 +1,4 @@
-import { Folder } from "@/utilitys/types";
+import { Folder, Link } from "@/utilitys/types";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -47,5 +47,30 @@ export const fetchAllLinks = async () => {
   }
 
   const data = await response.json();
+  return data.list;
+};
+
+export const fetchLinksByFolder = async (folderId: number): Promise<Link[]> => {
+  const accessToken = localStorage.getItem("accessToken");
+
+  if (!accessToken) {
+    throw new Error("로그인이 필요합니다.");
+  }
+
+  const response = await fetch(`${BASE_URL}/folders/${folderId}/links`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(
+      errorData.message || "링크 데이터를 가져오는 데 실패했습니다."
+    );
+  }
+  const data = await response.json();
+
   return data.list;
 };

@@ -1,5 +1,6 @@
 import React from "react";
 import LinkCard from "./LinkCard";
+import LoadingSpinner from "../loadingSpinner/LoadingSpinner";
 
 interface Link {
   id: number;

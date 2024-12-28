@@ -1,11 +1,5 @@
+import { Link } from "@/utilitys/types";
 import React from "react";
-
-interface Link {
-  id: number;
-  imageSource: string;
-  createdAt: string;
-  description: string;
-}
 
 interface LinkCardProps {
   link: Link;
@@ -14,8 +8,14 @@ interface LinkCardProps {
 }
 
 const LinkCard: React.FC<LinkCardProps> = ({ link, timeAgo, formatDate }) => {
+  console.log(link);
   return (
-    <div className="flex flex-col items-center w-[calc(33.33%-20px)] bg-white">
+    <a
+      href={link.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex flex-col items-center w-[calc(33.33%-20px)] bg-white"
+    >
       <div className="w-full h-[200px]">
         <img
           src={link.imageSource}
@@ -31,7 +31,7 @@ const LinkCard: React.FC<LinkCardProps> = ({ link, timeAgo, formatDate }) => {
         <div className="line-clamp-2">{link.description}</div>
         <div>{formatDate(link.createdAt)}</div>
       </div>
-    </div>
+    </a>
   );
 };
 

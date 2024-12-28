@@ -1,13 +1,7 @@
 import React from "react";
 import LinkCard from "./LinkCard";
 import LoadingSpinner from "../loadingSpinner/LoadingSpinner";
-
-interface Link {
-  id: number;
-  imageSource: string;
-  createdAt: string;
-  description: string;
-}
+import { Link } from "@/utilitys/types";
 
 interface LinkListProps {
   links: Link[];

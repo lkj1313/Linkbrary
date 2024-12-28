@@ -20,8 +20,9 @@ import {
   fetchFolders,
   fetchLinksByFolder,
   updateFolderName,
-} from "../api/folderApi";
+} from "@/api/folderApi";
 import { Folder } from "@/utilitys/types";
+import useAuthStore from "@/stores/authStore";
 
 const LinksPage = () => {
   const [activeFolderId, setActiveFolderId] = useState<number | null>(null); // 활성화된 폴더 ID
@@ -29,7 +30,10 @@ const LinksPage = () => {
 
   const queryClient = useQueryClient(); // React Query 클라이언트 사용
   const router = useRouter();
+  const { user } = useAuthStore();
+
   const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL; // baseUrl
+
   //---------------리액트 라우터 ------------//
   // React Query 훅을 사용하여 모든 폴더 가져오기
   const { data: folders = [], isLoading } = useQuery<Folder[], Error>({
@@ -169,7 +173,7 @@ const LinksPage = () => {
   };
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
-    if (!accessToken) {
+    if (!accessToken && user === null) {
       alert("로그인이 필요합니다.");
       router.push("/login"); // 로그인 페이지로 리디렉션
     }

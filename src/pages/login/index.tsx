@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useRouter } from "next/router";
 import CommonInput from "@/components/input/CommonInput";
 import CommonButton from "@/components/button/CommonButton";
+import { fetchLogin, fetchUsers } from "@/api/userApi"; // API 호출
+import useAuthStore from "@/stores/authStore";
 
 const Login = () => {
   const [emailError, setEmailError] = useState<string | null>(null);
@@ -12,6 +14,7 @@ const Login = () => {
   });
 
   const router = useRouter();
+  const setUser = useAuthStore((state) => state.setUser); // Zustand setUser 함수
 
   const handleNavigateSignupPage = () => {
     router.push("/signup");
@@ -39,7 +42,6 @@ const Login = () => {
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
     if (
       emailError ||
@@ -51,30 +53,28 @@ const Login = () => {
     }
 
     try {
-      const response = await fetch(`${BASE_URL}/auth/sign-in`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      // 로그인 요청
+      const loginData = await fetchLogin(formValues.email, formValues.password);
+
+      // 토큰 저장
+      localStorage.setItem("accessToken", loginData.accessToken);
+
+      // 로그인 후 사용자 정보 가져오기
+      const userData = await fetchUsers(); // fetchUsers로 유저 정보 가져옴
+
+      // Zustand에 사용자 정보 저장
+      setUser(
+        {
+          email: userData.email,
+          name: userData.name,
         },
-        body: JSON.stringify({
-          email: formValues.email,
-          password: formValues.password,
-        }),
-      });
+        loginData.accessToken
+      );
 
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem("accessToken", data.accessToken); // 토큰 저장
-        alert("로그인 성공!");
-
-        router.push("/links");
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || "로그인에 실패했습니다.");
-      }
-    } catch (err) {
-      console.error("Error:", err);
-      setError("서버와 통신할 수 없습니다.");
+      alert("로그인 성공!");
+      router.push("/links"); // 링크 페이지로 이동
+    } catch (err: any) {
+      setError(err.message || "로그인에 실패했습니다.");
     }
   };
 
@@ -125,17 +125,6 @@ const Login = () => {
           로그인
         </CommonButton>
       </form>
-      <div className="w-[400px] flex justify-between items-center bg-gray-200 py-[12px] px-[24px]">
-        <span>소셜 로그인</span>
-        <div className="flex gap-3">
-          <button className="w-[42px] h-[42px]">
-            <img src="/icon/googleIcon.svg" className="w-full h-full"></img>
-          </button>
-          <button className="w-[42px] h-[42px]">
-            <img src="/icon/kakaoIcon.svg" className="w-full h-full"></img>
-          </button>
-        </div>
-      </div>
     </div>
   );
 };

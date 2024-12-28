@@ -1,12 +1,15 @@
 import React from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import Footer from "../footer/Footer";
+import useAuthStore from "@/stores/authStore";
+
 const Header = () => {
   const router = useRouter();
   const handleLoginClick = () => {
     router.push("/login");
   };
+  const { user } = useAuthStore();
+
   return (
     <div className="w-screen py-[20px] px-[200px] flex justify-between bg-gray-100">
       {/* 로고 */}
@@ -34,7 +37,7 @@ const Header = () => {
             ⭐ 즐겨찾기
           </button>
           <button className="text-[14px] w-[100px] h-[37px] flex items-center justify-center gap-[6px] border-r-[1px] py-[10px] px-[12px]">
-            👤 xxx님
+            👤 {user?.name || "Guest"}님
           </button>
         </div>
       )}

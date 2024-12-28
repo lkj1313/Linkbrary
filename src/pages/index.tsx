@@ -1,10 +1,5 @@
-import { Geist, Geist_Mono } from "next/font/google";
-import Header from "@/components/header/Header";
+import LandingPage from "./landing";
 
 export default function Home() {
-  return (
-    <div>
-      <Header />
-    </div>
-  );
+  return <LandingPage />;
 }

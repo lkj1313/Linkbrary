@@ -5,9 +5,14 @@ import CommonButton from "@/components/button/CommonButton";
 
 const Login = () => {
   const [emailError, setEmailError] = useState<string | null>(null);
-  const [loginError, setLoginError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [formValues, setFormValues] = useState({
+    email: "",
+    password: "",
+  });
 
   const router = useRouter();
+
   const handleNavigateSignupPage = () => {
     router.push("/signup");
   };
@@ -21,38 +26,55 @@ const Login = () => {
     }
   };
 
-  const [formValues, setFormValues] = useState({
-    email: "",
-    password: "",
-  });
-
   const handleChange = (field: string, value: string) => {
     setFormValues((prev) => ({
       ...prev,
       [field]: value,
     }));
 
-    // 이메일 검증
     if (field === "email") {
       validateEmail(value);
     }
   };
 
-  const handleLogin = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
+    if (
+      emailError ||
+      formValues.email.trim() === "" ||
+      formValues.password.trim() === ""
+    ) {
+      setError("모든 필드를 올바르게 입력해주세요.");
+      return;
+    }
 
-    const user = users.find(
-      (user: any) =>
-        user.email === formValues.email && user.password === formValues.password
-    );
+    try {
+      const response = await fetch(`${BASE_URL}/auth/sign-in`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formValues.email,
+          password: formValues.password,
+        }),
+      });
 
-    if (user) {
-      alert(`${user.name}님 환영합니다.`);
-      router.push("/"); // 로그인 성공 시 메인 페이지로 이동
-    } else {
-      alert("비밀번호나 아이디가 맞지 않습니다.");
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem("accessToken", data.accessToken); // 토큰 저장
+        console.log("로그인 성공!", data);
+
+        router.push("/links");
+      } else {
+        const errorData = await response.json();
+        setError(errorData.message || "로그인에 실패했습니다.");
+      }
+    } catch (err) {
+      console.error("Error:", err);
+      setError("서버와 통신할 수 없습니다.");
     }
   };
 
@@ -72,7 +94,7 @@ const Login = () => {
           </div>
         </div>
       </div>
-      <form className="flex flex-col gap-[24px]">
+      <form onSubmit={handleLogin} className="flex flex-col gap-[24px]">
         <div>
           <CommonInput
             type="email"
@@ -94,14 +116,26 @@ const Login = () => {
           비밀번호
         </CommonInput>
 
+        {error && <div className="text-red text-sm mt-2">{error}</div>}
+
         <CommonButton
-          onClick={handleLogin}
           type="submit"
           className={`bg-linearGradient w-[400px] h-[60px] rounded-md text-white`}
         >
           로그인
         </CommonButton>
       </form>
+      <div className="w-[400px] flex justify-between items-center bg-gray-200 py-[12px] px-[24px]">
+        <span>소셜 로그인</span>
+        <div className="flex gap-3">
+          <button className="w-[42px] h-[42px]">
+            <img src="/icon/googleIcon.svg" className="w-full h-full"></img>
+          </button>
+          <button className="w-[42px] h-[42px]">
+            <img src="/icon/kakaoIcon.svg" className="w-full h-full"></img>
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

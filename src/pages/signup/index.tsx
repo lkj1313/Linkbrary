@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import CommonInput from "@/components/input/CommonInput";
 import CommonButton from "@/components/button/CommonButton";
@@ -6,20 +6,11 @@ import CommonButton from "@/components/button/CommonButton";
 const Signup = () => {
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [emailError, setEmailError] = useState<string | null>(null);
-
+  const [serverError, setServerError] = useState<string | null>(null); // 서버 에러 처리
+  const [data, setData] = useState(null);
   const router = useRouter();
-  const handleNavigateLoginPage = () => {
-    router.push("/login");
-  };
 
-  const validateEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // 이메일 형식 정규식
-    if (!emailRegex.test(email)) {
-      setEmailError("유효한 이메일 주소를 입력해주세요.");
-    } else {
-      setEmailError(null);
-    }
-  };
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
   const [formValues, setFormValues] = useState({
     email: "",
@@ -36,39 +27,48 @@ const Signup = () => {
 
     // 이메일 검증
     if (field === "email") {
-      validateEmail(value);
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      setEmailError(
+        emailRegex.test(value) ? null : "유효한 이메일 주소를 입력해주세요."
+      );
     }
 
-    // 비밀번호 확인 검증 (값이 있을 때만)
+    // 비밀번호 확인 검증
     if (field === "confirmPassword" && value.trim() !== "") {
-      if (value !== formValues.password) {
-        setPasswordError("비밀번호가 일치하지 않습니다.");
-      } else {
-        setPasswordError(null);
-      }
+      setPasswordError(
+        value !== formValues.password ? "비밀번호가 일치하지 않습니다." : null
+      );
     }
   };
 
-  const handleSignup = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleSignup = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
     if (isFormValid) {
-      const { email, name, password } = formValues;
+      try {
+        const response = await fetch(`${BASE_URL}/auth/sign-up`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: formValues.email,
+            name: formValues.name,
+            password: formValues.password,
+          }),
+        });
 
-      // 기존 사용자 데이터 가져오기
-      const existingUsers = JSON.parse(localStorage.getItem("users") || "[]");
-
-      // 새로운 사용자 추가
-      const updatedUsers = [...existingUsers, { email, name, password }];
-
-      // localStorage에 저장
-      localStorage.setItem("users", JSON.stringify(updatedUsers));
-
-      // 로그인 페이지로 이동
-      router.push("/login");
-      alert("회원가입을 환영합니다.");
-    } else {
-      console.log("폼이 유효하지 않습니다.");
+        if (response.ok) {
+          alert("회원가입을 환영합니다!");
+          router.push("/login");
+        } else {
+          const errorData = await response.json();
+          setServerError(errorData.message || "회원가입에 실패했습니다.");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        setServerError("서버와 통신할 수 없습니다.");
+      }
     }
   };
 
@@ -87,7 +87,10 @@ const Signup = () => {
           <img src="/logo.svg" alt="로고" className="w-[210px] h-[38px]" />
           <div>
             이미 회원이신가요?{" "}
-            <button onClick={handleNavigateLoginPage} className="text-blue-500">
+            <button
+              onClick={() => router.push("/login")}
+              className="text-blue-500"
+            >
               로그인하기
             </button>
           </div>
@@ -132,11 +135,14 @@ const Signup = () => {
             <div className="text-red text-sm mt-1">{passwordError}</div>
           )}
         </div>
+        {serverError && (
+          <div className="text-red text-sm mt-2">{serverError}</div>
+        )}
         <CommonButton
           onClick={handleSignup}
           type="submit"
           className="bg-linearGradient w-[400px] h-[60px] rounded-md text-white"
-          disabled={!isFormValid} // 버튼 활성화/비활성화
+          disabled={!isFormValid}
         >
           회원가입
         </CommonButton>

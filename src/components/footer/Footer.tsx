@@ -1,15 +1,32 @@
 import React from "react";
 import Image from "next/image";
+import { useRouter } from "next/router";
 
 const Footer = () => {
+  const router = useRouter();
   return (
     <div className="py-[32px] px-[104px] bg-black">
       {" "}
       <div className="text-white flex justify-between">
         <div>@codeit - 2024</div>
         <div className="w-[181px] flex gap-[30px]">
-          <div>Privacy Policy</div>
-          <div>FaQ</div>
+          <div
+            onClick={() => {
+              router.push("/privacy");
+            }}
+            className="cursor-pointer"
+          >
+            Privacy Policy
+          </div>
+
+          <div
+            onClick={() => {
+              router.push("/faq");
+            }}
+            className="cursor-pointer"
+          >
+            FAQ
+          </div>
         </div>
         <div className="flex gap-1">
           <Image

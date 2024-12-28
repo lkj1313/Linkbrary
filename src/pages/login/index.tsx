@@ -4,10 +4,12 @@ import CommonInput from "@/components/input/CommonInput";
 import CommonButton from "@/components/button/CommonButton";
 import { fetchLogin, fetchUsers } from "@/api/userApi"; // API 호출
 import useAuthStore from "@/stores/authStore";
+import LoadingSpinner from "@/components/loadingSpinner/LoadingSpinner";
 
 const Login = () => {
   const [emailError, setEmailError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [formValues, setFormValues] = useState({
     email: "",
     password: "",
@@ -40,6 +42,7 @@ const Login = () => {
     }
   };
 
+  // 로그인함수
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -53,6 +56,8 @@ const Login = () => {
     }
 
     try {
+      setIsLoading(true); // 로딩 시작
+
       // 로그인 요청
       const loginData = await fetchLogin(formValues.email, formValues.password);
 
@@ -75,11 +80,13 @@ const Login = () => {
       router.push("/links"); // 링크 페이지로 이동
     } catch (err: any) {
       setError(err.message || "로그인에 실패했습니다.");
+    } finally {
+      setIsLoading(false); // 로딩 종료
     }
   };
 
   return (
-    <div className="h-screen w-screen bg-gray-100 flex flex-col items-center justify-center gap-[30px]">
+    <div className="h-screen relative w-screen bg-gray-100 flex flex-col items-center justify-center gap-[30px]">
       <div>
         <div className="flex flex-col gap-[16px] items-center">
           <img src="/logo.svg" alt="로고" className="w-[210px] h-[38px]" />
@@ -125,6 +132,11 @@ const Login = () => {
           로그인
         </CommonButton>
       </form>
+      {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <LoadingSpinner />
+        </div>
+      )}
     </div>
   );
 };

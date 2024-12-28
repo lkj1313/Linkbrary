@@ -8,8 +8,17 @@ const Header = () => {
   const handleLoginClick = () => {
     router.push("/login");
   };
-  const { user } = useAuthStore();
+  // 로그인 유저 정보 가져오기
+  const { user, logout } = useAuthStore();
 
+  // 로그아웃 함수
+  const handleLogoutClick = () => {
+    const isConfirmed = confirm("로그아웃 하시겠습니까?");
+    if (isConfirmed) {
+      logout();
+      router.push("/"); // 로그아웃 후 홈으로 이동
+    }
+  };
   return (
     <div className="w-screen py-[20px] px-[200px] flex justify-between bg-gray-100">
       {/* 로고 */}
@@ -36,7 +45,10 @@ const Header = () => {
           <button className="text-[14px] w-[100px] h-[37px] flex items-center justify-center gap-[6px] border-r-[1px] py-[10px] px-[12px]">
             ⭐ 즐겨찾기
           </button>
-          <button className="text-[14px] w-[100px] h-[37px] flex items-center justify-center gap-[6px] border-r-[1px] py-[10px] px-[12px]">
+          <button
+            onClick={handleLogoutClick}
+            className="text-[14px] w-[100px] h-[37px] flex items-center justify-center gap-[6px] border-r-[1px] py-[10px] px-[12px]"
+          >
             👤 {user?.name || "Guest"}님
           </button>
         </div>

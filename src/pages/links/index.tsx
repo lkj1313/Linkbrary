@@ -26,10 +26,8 @@ const LinksPage = () => {
   const queryClient = useQueryClient(); // React Query 클라이언트 사용
   const router = useRouter();
   const { user } = useAuthStore();
-  console.log(user);
 
   const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL; // baseUrl
-  console.log(activeFolderId);
 
   //---------------리액트 라우터 ------------//
   // React Query 훅을 사용하여 모든 폴더 가져오기

@@ -10,12 +10,19 @@ const AddLinkInput: React.FC<AddLinkInputProps> = ({
   setInputLink,
   handleAddLink,
 }) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault(); // 기본 Enter 동작 방지 (폼 제출 방지)
+      handleAddLink(); // Enter 키 입력 시 handleAddLink 호출
+    }
+  };
   return (
     <div className="w-[800px] h-[69px] relative">
       <input
         type="text"
         value={inputLink}
         onChange={(e) => setInputLink(e.target.value)}
+        onKeyDown={handleKeyDown} // Enter 키 이벤트 추가
         placeholder="링크를 추가해 보세요"
         className="h-full w-full rounded-[15px] py-[16px] px-[40px] border border-primary"
       ></input>

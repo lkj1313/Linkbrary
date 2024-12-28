@@ -39,7 +39,7 @@ const LinkCard: React.FC<LinkCardProps> = ({ link, timeAgo, formatDate }) => {
     }
   };
 
-  //링크 수정 함수수
+  //링크 수정 함수
   const handleEditLink = async (linkId: number) => {
     const accessToken = localStorage.getItem("accessToken");
 

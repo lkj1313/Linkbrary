@@ -85,3 +85,22 @@ export const updateFolderName = async (
     throw new Error(errorData.message || "폴더 이름 수정에 실패했습니다.");
   }
 };
+export const addFolder = async (folderName: string, accessToken: string) => {
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+
+  const response = await fetch(`${BASE_URL}/folders`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({ name: folderName }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "폴더 추가 실패");
+  }
+
+  return await response.json(); // 서버 응답 반환 (필요 시)
+};

@@ -65,10 +65,18 @@ const LinkCard: React.FC<LinkCardProps> = ({ link, timeAgo, formatDate }) => {
       alert("링크 수정에 실패했습니다.");
     }
   };
+
+  // 유틸리티 함수: URL에 프로토콜 추가
+  const addProtocol = (url: string) => {
+    if (!/^https?:\/\//i.test(url)) {
+      return `https://${url}`; // 프로토콜이 없는 경우 https:// 추가
+    }
+    return url; // 이미 프로토콜이 있다면 그대로 반환
+  };
   return (
     <div className="flex flex-col items-center w-[calc(33.33%-20px)] bg-white">
       <a
-        href={link.url}
+        href={addProtocol(link.url)} // 프로토콜 추가 후 URL 전달
         target="_blank"
         rel="noopener noreferrer"
         className="w-full h-[200px]"

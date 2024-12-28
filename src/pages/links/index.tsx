@@ -14,10 +14,16 @@ import LoadingSpinner from "@/components/loadingSpinner/LoadingSpinner";
 
 // 유틸리티 및 API import
 import { timeAgo, formatDate } from "@/utilitys/dataUtils";
-import { deleteFolder, fetchFolders, updateFolderName } from "@/api/folderApi";
-import { fetchAllLinks, fetchLinksByFolder } from "@/api/linkApi";
+import {
+  addFolder,
+  deleteFolder,
+  fetchFolders,
+  updateFolderName,
+} from "@/api/folderApi";
+import { addLink, fetchAllLinks, fetchLinksByFolder } from "@/api/linkApi";
 import { Folder } from "@/utilitys/types";
 import useAuthStore from "@/stores/authStore";
+import FolderActions from "@/components/linksPage/FolderActions";
 
 const LinksPage = () => {
   const [activeFolderId, setActiveFolderId] = useState<number | null>(null); // 활성화된 폴더 ID
@@ -26,8 +32,6 @@ const LinksPage = () => {
   const queryClient = useQueryClient(); // React Query 클라이언트 사용
   const router = useRouter();
   const { user } = useAuthStore();
-
-  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL; // baseUrl
 
   //---------------리액트 라우터 ------------//
   // React Query 훅을 사용하여 모든 폴더 가져오기
@@ -46,14 +50,12 @@ const LinksPage = () => {
   });
 
   // ------------------함수 ----------------- //
-
+  // 활성화된 폴더ID 업데이트 함수
+  const handleFolderClick = (id: number | null) => {
+    setActiveFolderId(id); // 활성화된 폴더 ID 업데이트
+  };
   // 링크추가 함수
   const handleAddLink = async () => {
-    if (activeFolderId === null) {
-      alert("폴더를 선택해주세요.");
-      return;
-    }
-
     if (!inputLink.trim()) {
       alert("링크를 입력해주세요.");
       return;
@@ -67,32 +69,21 @@ const LinksPage = () => {
         return;
       }
 
-      const response = await fetch(`${BASE_URL}/links`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({
-          folderId: activeFolderId,
-          url: inputLink, // 입력된 링크 데이터 전송
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "링크 추가 실패");
-      }
+      await addLink(activeFolderId, inputLink, accessToken);
 
       alert("링크가 성공적으로 추가되었습니다!");
       setInputLink(""); // 입력 필드 초기화
-      queryClient.invalidateQueries({ queryKey: ["links"] });
-    } catch (error) {
-      console.error(error);
-      alert("링크 추가 중 문제가 발생했습니다.");
+
+      // 캐시를 무효화하여 UI를 갱신
+      queryClient.invalidateQueries({
+        queryKey: activeFolderId ? ["links", activeFolderId] : ["links"],
+      });
+    } catch (error: any) {
+      console.error("링크 추가 중 오류 발생:", error.message);
+      alert(error.message || "링크 추가 중 문제가 발생했습니다.");
     }
   };
-
+  // 폴더 추가함수
   const handleAddFolder = async () => {
     const folderName = prompt("추가할 폴더 이름을 입력하세요:");
 
@@ -109,30 +100,19 @@ const LinksPage = () => {
         return;
       }
 
-      const response = await fetch(`${BASE_URL}/folders`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({ name: folderName }),
-      });
-
-      if (!response.ok) {
-        throw new Error("폴더 추가 실패");
-      }
+      // 유틸리티 함수 호출
+      await addFolder(folderName, accessToken);
 
       alert("폴더가 성공적으로 추가되었습니다!");
-      fetchFolders();
+
+      // React Query 캐시 무효화하여 폴더 목록 갱신
       queryClient.invalidateQueries({ queryKey: ["folders"] });
-    } catch (error) {
-      console.error(error);
-      alert("폴더 추가 중 문제가 발생했습니다.");
+    } catch (error: any) {
+      console.error("폴더 추가 중 오류 발생:", error.message);
+      alert(error.message || "폴더 추가 중 문제가 발생했습니다.");
     }
   };
-  const handleFolderClick = (id: number | null) => {
-    setActiveFolderId(id); // 활성화된 폴더 ID 업데이트
-  };
+  // 폴더삭제 함수
   const handleDeleteFolder = async (folderId: number, folderName: string) => {
     const confirmDelete = window.confirm("정말로 이 폴더를 삭제하시겠습니까?");
     if (!confirmDelete) return;
@@ -148,6 +128,8 @@ const LinksPage = () => {
       alert("폴더 삭제에 실패했습니다.");
     }
   };
+
+  //폴더네임 변경 함수
   const handleUpdateFolderName = async (
     folderId: number,
     currentName: string
@@ -169,6 +151,7 @@ const LinksPage = () => {
       alert("폴더 이름 변경에 실패했습니다.");
     }
   };
+  ///////////////////////// useEffect
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
     if (!accessToken && user == null) {
@@ -176,7 +159,8 @@ const LinksPage = () => {
       router.push("/login"); // 로그인 페이지로 리디렉션
     }
   }, [router, user]);
-  // 버튼 컴포넌트 isloading?
+
+  //////////////// 버튼 컴포넌트 isloading?
   if (isLoading)
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-gray-100 z-50">
@@ -212,30 +196,13 @@ const LinksPage = () => {
           {/* FolderTitle 컴포넌트 */}
           <div className="w-[1060px] mt-6 flex justify-between">
             <FolderTitle activeFolderId={activeFolderId} folders={folders} />
-            {activeFolderId !== null && ( // 전체 버튼이 아닌 경우에만 렌더링
-              <div className="flex gap-5 text-slate-500">
-                <button
-                  onClick={() => {
-                    const folder = folders.find(
-                      (folder) => folder.id === activeFolderId
-                    );
-                    if (folder) handleUpdateFolderName(folder.id, folder.name); // 이름 변경 함수 호출
-                  }}
-                >
-                  ✏️ 이름변경
-                </button>
-                <button
-                  onClick={() => {
-                    const folder = folders.find(
-                      (folder) => folder.id === activeFolderId
-                    );
-                    if (folder) handleDeleteFolder(folder.id, folder.name);
-                  }}
-                >
-                  🗑️ 삭제
-                </button>
-              </div>
-            )}
+
+            <FolderActions
+              activeFolderId={activeFolderId}
+              folders={folders}
+              handleUpdateFolderName={handleUpdateFolderName}
+              handleDeleteFolder={handleDeleteFolder}
+            />
           </div>
         </section>{" "}
         {/* 링크리스트 섹션 */}

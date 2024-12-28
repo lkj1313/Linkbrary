@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
 const LandingPage = () => {
   const router = useRouter();
   const handleNavigate = () => {
-    router.push("/");
+    router.push("/links");
   };
   return (
     <div>

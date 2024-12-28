@@ -41,6 +41,36 @@ export const fetchAllLinks = async (): Promise<Link[]> => {
   return uniqueLinks as Link[]; // 중복 제거된 링크 데이터를 반환
 };
 
+//링크 추가 함수
+export const addLink = async (
+  folderId: number | null,
+  url: string,
+  accessToken: string
+): Promise<void> => {
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+
+  if (!folderId) {
+    throw new Error("폴더를 선택해주세요.");
+  }
+
+  const response = await fetch(`${BASE_URL}/links`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({
+      folderId,
+      url,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "링크 추가 실패");
+  }
+};
+
 // 특정 폴더에 속한 링크 데이터를 가져오는 함수
 export const fetchLinksByFolder = async (folderId: number): Promise<Link[]> => {
   const accessToken = localStorage.getItem("accessToken");

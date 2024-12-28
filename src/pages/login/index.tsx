@@ -65,7 +65,7 @@ const Login = () => {
       if (response.ok) {
         const data = await response.json();
         localStorage.setItem("accessToken", data.accessToken); // 토큰 저장
-        console.log("로그인 성공!", data);
+        alert("로그인 성공!");
 
         router.push("/links");
       } else {

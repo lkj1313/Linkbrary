@@ -11,24 +11,22 @@ const AddLinkInput: React.FC<AddLinkInputProps> = ({
   handleAddLink,
 }) => {
   return (
-    <section className="h-[219px] pt-[60px] pb-[90px] px-[320px] bg-gray-100 flex items-center justify-center ">
-      <div className="w-[800px] h-[69px] relative">
-        <input
-          type="text"
-          value={inputLink}
-          onChange={(e) => setInputLink(e.target.value)}
-          placeholder="링크를 추가해 보세요"
-          className="h-full w-full rounded-[15px] py-[16px] px-[40px] border border-primary"
-        ></input>
-        <img src="/icon/clipIcon.svg" className="absolute top-6 left-3"></img>
-        <button
-          onClick={handleAddLink}
-          className="w-[80px] h-[37px] rounded-[8px] py-[10px] px-[16px] bg-linearGradient absolute top-[16px] right-3 text-[10px] text-white"
-        >
-          추가하기
-        </button>
-      </div>
-    </section>
+    <div className="w-[800px] h-[69px] relative">
+      <input
+        type="text"
+        value={inputLink}
+        onChange={(e) => setInputLink(e.target.value)}
+        placeholder="링크를 추가해 보세요"
+        className="h-full w-full rounded-[15px] py-[16px] px-[40px] border border-primary"
+      ></input>
+      <img src="/icon/clipIcon.svg" className="absolute top-6 left-3"></img>
+      <button
+        onClick={handleAddLink}
+        className="w-[80px] h-[37px] rounded-[8px] py-[10px] px-[16px] bg-linearGradient absolute top-[16px] right-3 text-[10px] text-white"
+      >
+        추가하기
+      </button>
+    </div>
   );
 };
 

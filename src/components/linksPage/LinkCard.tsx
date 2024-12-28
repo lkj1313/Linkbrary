@@ -23,7 +23,7 @@ const LinkCard: React.FC<LinkCardProps> = ({ link, timeAgo, formatDate }) => {
           alt={link.description}
         />
       </div>
-      <div className="w-full h-[135px] flex flex-col gap-[10px] rounded-bl-[15px] rounded-br-[15px] px-[20px] py-[15px]">
+      <div className="w-full h-[135px] flex flex-col gap-[10px] rounded-bl-[15px] rounded-br-[15px] px-[20px] py-[10px]">
         <div className="font-[400] text-[13px] flex justify-between text-gray-600">
           <span>{timeAgo(link.createdAt)}</span>
           <button>⋯</button>

@@ -1,4 +1,4 @@
-import { Folder } from "@/pages/links";
+import { Folder } from "@/utilitys/types";
 
 interface FolderTitleProps {
   activeFolderId: number | null;

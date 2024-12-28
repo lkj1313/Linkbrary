@@ -14,13 +14,8 @@ import LoadingSpinner from "@/components/loadingSpinner/LoadingSpinner";
 
 // 유틸리티 및 API import
 import { timeAgo, formatDate } from "@/utilitys/dataUtils";
-import {
-  deleteFolder,
-  fetchAllLinks,
-  fetchFolders,
-  fetchLinksByFolder,
-  updateFolderName,
-} from "@/api/folderApi";
+import { deleteFolder, fetchFolders, updateFolderName } from "@/api/folderApi";
+import { fetchAllLinks, fetchLinksByFolder } from "@/api/linkApi";
 import { Folder } from "@/utilitys/types";
 import useAuthStore from "@/stores/authStore";
 
@@ -31,8 +26,10 @@ const LinksPage = () => {
   const queryClient = useQueryClient(); // React Query 클라이언트 사용
   const router = useRouter();
   const { user } = useAuthStore();
+  console.log(user);
 
   const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL; // baseUrl
+  console.log(activeFolderId);
 
   //---------------리액트 라우터 ------------//
   // React Query 훅을 사용하여 모든 폴더 가져오기
@@ -51,6 +48,8 @@ const LinksPage = () => {
   });
 
   // ------------------함수 ----------------- //
+
+  // 링크추가 함수
   const handleAddLink = async () => {
     if (activeFolderId === null) {
       alert("폴더를 선택해주세요.");
@@ -89,6 +88,7 @@ const LinksPage = () => {
 
       alert("링크가 성공적으로 추가되었습니다!");
       setInputLink(""); // 입력 필드 초기화
+      queryClient.invalidateQueries({ queryKey: ["links"] });
     } catch (error) {
       console.error(error);
       alert("링크 추가 중 문제가 발생했습니다.");
@@ -173,11 +173,11 @@ const LinksPage = () => {
   };
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
-    if (!accessToken && user === null) {
+    if (!accessToken && user == null) {
       alert("로그인이 필요합니다.");
       router.push("/login"); // 로그인 페이지로 리디렉션
     }
-  }, [router]);
+  }, [router, user]);
   // 버튼 컴포넌트 isloading?
   if (isLoading)
     return (

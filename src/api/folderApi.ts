@@ -1,4 +1,4 @@
-import { Folder, Link } from "@/utilitys/types";
+import { Folder } from "@/utilitys/types";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 

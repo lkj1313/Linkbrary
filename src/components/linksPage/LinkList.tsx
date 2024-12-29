@@ -1,6 +1,6 @@
 import React from "react";
 import LinkCard from "./LinkCard";
-import LoadingSpinner from "../loadingSpinner/LoadingSpinner";
+
 import { Link } from "@/utilitys/types";
 
 interface LinkListProps {

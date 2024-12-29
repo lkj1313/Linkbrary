@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Footer from "@/components/footer/Footer";
 import Header from "@/components/header/Header";
 import CommonButton from "@/components/button/CommonButton";

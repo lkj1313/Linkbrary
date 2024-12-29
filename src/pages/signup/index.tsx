@@ -7,7 +7,7 @@ const Signup = () => {
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [emailError, setEmailError] = useState<string | null>(null);
   const [serverError, setServerError] = useState<string | null>(null); // 서버 에러 처리
-  const [data, setData] = useState(null);
+
   const router = useRouter();
 
   const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;

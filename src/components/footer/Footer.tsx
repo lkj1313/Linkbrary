@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 const Footer = () => {
   const router = useRouter();
   return (
-    <div className="py-[32px] px-[104px] bg-black mt-auto">
+    <div className="py-[32px] px-[104px]  bg-black mt-auto">
       {" "}
       <div className="text-white flex justify-between">
         <div>@codeit - 2024</div>
@@ -28,7 +28,7 @@ const Footer = () => {
             FAQ
           </div>
         </div>
-        <div className="flex gap-1">
+        <div className="flex gap-3">
           <Image
             src="/icon/facebookIcon.svg"
             alt="facebook"

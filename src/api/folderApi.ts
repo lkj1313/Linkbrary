@@ -31,7 +31,7 @@ export const fetchFolders = async (): Promise<Folder[]> => {
 };
 
 // 폴더 삭제 함수
-export const deleteFolder = async (folderId: number, name: string) => {
+export const deleteFolder = async (folderId: number) => {
   const accessToken = localStorage.getItem("accessToken"); // 인증 토큰 가져오기
   if (!accessToken) {
     alert("로그인이 필요합니다.");
@@ -45,12 +45,11 @@ export const deleteFolder = async (folderId: number, name: string) => {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`, // 인증 토큰 포함
       },
-      body: JSON.stringify({ name }), // 요청 본문에 이름 포함
     });
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || "폴더 삭제에 실패했습니다.");
+      throw new Error(errorData.message || "폴더 삭제 실패");
     }
 
     alert("폴더가 성공적으로 삭제되었습니다!");
@@ -86,8 +85,6 @@ export const updateFolderName = async (
   }
 };
 export const addFolder = async (folderName: string, accessToken: string) => {
-  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-
   const response = await fetch(`${BASE_URL}/folders`, {
     method: "POST",
     headers: {

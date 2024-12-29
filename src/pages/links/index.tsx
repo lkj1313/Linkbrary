@@ -50,6 +50,7 @@ const LinksPage = () => {
   });
 
   // ------------------함수 ----------------- //
+
   // 활성화된 폴더ID 업데이트 함수
   const handleFolderClick = (id: number | null) => {
     setActiveFolderId(id); // 활성화된 폴더 ID 업데이트
@@ -113,14 +114,12 @@ const LinksPage = () => {
     }
   };
   // 폴더삭제 함수
-  const handleDeleteFolder = async (folderId: number, folderName: string) => {
+  const handleDeleteFolder = async (folderId: number) => {
     const confirmDelete = window.confirm("정말로 이 폴더를 삭제하시겠습니까?");
     if (!confirmDelete) return;
 
     try {
-      await deleteFolder(folderId, folderName);
-      alert("폴더가 성공적으로 삭제되었습니다!");
-
+      await deleteFolder(folderId);
       // "folders" 쿼리 무효화하여 폴더 목록 새로 가져오기
       queryClient.invalidateQueries({ queryKey: ["folders"] });
     } catch (error) {
@@ -160,7 +159,17 @@ const LinksPage = () => {
     }
   }, [router, user]);
 
-  //////////////// 버튼 컴포넌트 isloading?
+  /// useEffect
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken");
+
+    if (!accessToken || !user) {
+      alert("로그인이 필요합니다.");
+      router.push("/login"); // 로그인 페이지로 리디렉션
+    }
+  }, [router, user]);
+
+  //////////////// 버튼그룹룹 isloading?
   if (isLoading)
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-gray-100 z-50">
@@ -171,7 +180,7 @@ const LinksPage = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <main className="flex  flex-col gap-[40px] justify-center items-center">
+      <main className="flex  flex-col gap-[40px] mb-5 justify-center items-center">
         {/* 폴더 목록 섹션 */}
         <section className="h-[219px] pt-[60px] pb-[90px] px-[320px] bg-gray-100 flex items-center justify-center ">
           <AddLinkInput

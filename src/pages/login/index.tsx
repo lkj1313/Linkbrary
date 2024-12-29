@@ -76,7 +76,7 @@ const Login = () => {
         loginData.accessToken
       );
 
-      alert("로그인 성공!");
+      alert(`${userData.name}님 환영합니다!`);
       router.push("/links"); // 링크 페이지로 이동
     } catch (err: any) {
       setError(err.message || "로그인에 실패했습니다.");

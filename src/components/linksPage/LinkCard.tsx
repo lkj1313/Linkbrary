@@ -7,13 +7,19 @@ interface LinkCardProps {
   link: Link;
   timeAgo: (createdAt: string) => string;
   formatDate: (createdAt: string) => string;
+  activeFolderId: number | null;
 }
 
-const LinkCard: React.FC<LinkCardProps> = ({ link, timeAgo, formatDate }) => {
+const LinkCard: React.FC<LinkCardProps> = ({
+  link,
+  timeAgo,
+  formatDate,
+  activeFolderId,
+}) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // 드롭다운 상태 관리
   const [isLoading, setIsLoading] = useState(false);
 
-  //케밥버튼 드롭다운 함수수
+  //케밥버튼 드롭다운 함수
   const toggleDropdown = () => {
     setIsDropdownOpen((prev) => !prev); // 상태 토글
   };
@@ -99,7 +105,9 @@ const LinkCard: React.FC<LinkCardProps> = ({ link, timeAgo, formatDate }) => {
       <div className="w-full h-[135px] flex flex-col gap-[10px] rounded-bl-[15px] rounded-br-[15px] px-[0px] py-[10px] relative">
         <div className="font-[400] text-[13px] flex justify-between text-gray-600">
           <span>{timeAgo(link.createdAt)}</span>
-          <button onClick={toggleDropdown}>⋯</button>
+          {activeFolderId !== null && (
+            <button onClick={toggleDropdown}>⋯</button>
+          )}
         </div>
         {/* 드롭다운 메뉴 */}
         {isDropdownOpen && (

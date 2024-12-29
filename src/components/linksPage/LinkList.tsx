@@ -7,9 +7,15 @@ interface LinkListProps {
   links: Link[];
   timeAgo: (createdAt: string) => string;
   formatDate: (createdAt: string) => string;
+  activeFolderId: number | null;
 }
 
-const LinkList: React.FC<LinkListProps> = ({ links, timeAgo, formatDate }) => {
+const LinkList: React.FC<LinkListProps> = ({
+  links,
+  timeAgo,
+  formatDate,
+  activeFolderId,
+}) => {
   return (
     <>
       {links.length > 0 ? (
@@ -19,6 +25,7 @@ const LinkList: React.FC<LinkListProps> = ({ links, timeAgo, formatDate }) => {
             link={link}
             timeAgo={timeAgo}
             formatDate={formatDate}
+            activeFolderId={activeFolderId}
           />
         ))
       ) : (

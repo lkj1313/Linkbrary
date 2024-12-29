@@ -42,9 +42,6 @@ const Header = () => {
         />
       ) : (
         <div className="flex justify-between">
-          <button className="text-[14px] w-[100px] h-[37px] flex items-center justify-center gap-[6px] border-r-[1px] py-[10px] px-[12px]">
-            ⭐ 즐겨찾기
-          </button>
           <button
             onClick={handleLogoutClick}
             className="text-[14px] w-[100px] h-[37px] flex items-center justify-center gap-[6px] border-r-[1px] py-[10px] px-[12px]"

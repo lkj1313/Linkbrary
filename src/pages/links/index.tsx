@@ -150,16 +150,8 @@ const LinksPage = () => {
       alert("폴더 이름 변경에 실패했습니다.");
     }
   };
-  ///////////////////////// useEffect
-  useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken");
-    if (!accessToken && user == null) {
-      alert("로그인이 필요합니다.");
-      router.push("/login"); // 로그인 페이지로 리디렉션
-    }
-  }, [router, user]);
 
-  /// useEffect
+  //////////////// useEffect
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
 
@@ -169,7 +161,7 @@ const LinksPage = () => {
     }
   }, [router, user]);
 
-  //////////////// 버튼그룹룹 isloading?
+  //////////////// 버튼그룹 isloading?
   if (isLoading)
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-gray-100 z-50">
@@ -221,7 +213,12 @@ const LinksPage = () => {
               <LoadingSpinner />
             </div>
           ) : (
-            <LinkList links={links} timeAgo={timeAgo} formatDate={formatDate} />
+            <LinkList
+              links={links}
+              timeAgo={timeAgo}
+              formatDate={formatDate}
+              activeFolderId={activeFolderId}
+            />
           )}
         </section>
       </main>

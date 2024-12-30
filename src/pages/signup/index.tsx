@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import CommonInput from "@/components/input/CommonInput";
 import CommonButton from "@/components/button/CommonButton";
+import LoadingSpinner from "@/components/loadingSpinner/LoadingSpinner";
 
 const Signup = () => {
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [emailError, setEmailError] = useState<string | null>(null);
   const [serverError, setServerError] = useState<string | null>(null); // 서버 에러 처리
+  const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
 
@@ -48,6 +50,7 @@ const Signup = () => {
 
     if (isFormValid) {
       try {
+        setIsLoading(true);
         const response = await fetch(`${BASE_URL}/auth/sign-up`, {
           method: "POST",
           headers: {
@@ -69,7 +72,9 @@ const Signup = () => {
         }
       } catch (error) {
         console.error("Error:", error);
-        setServerError("서버와 통신할 수 없습니다.");
+        alert(error);
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -90,7 +95,7 @@ const Signup = () => {
             src="/logo.svg"
             alt="로고"
             onClick={handleNavigateHomePage}
-            className="w-[210px] h-[38px]"
+            className="w-[210px] h-[38px]  cursor-pointer"
           />
 
           <div>
@@ -143,9 +148,7 @@ const Signup = () => {
             <div className="text-red text-sm mt-1">{passwordError}</div>
           )}
         </div>
-        {serverError && (
-          <div className="text-red text-sm mt-2">{serverError}</div>
-        )}
+
         <CommonButton
           onClick={handleSignup}
           type="submit"
@@ -155,6 +158,11 @@ const Signup = () => {
           회원가입
         </CommonButton>
       </form>
+      {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <LoadingSpinner />
+        </div>
+      )}
     </div>
   );
 };

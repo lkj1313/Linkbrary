@@ -20,7 +20,7 @@ const Header = () => {
     }
   };
   return (
-    <div className="w-screen py-[20px] px-[200px] flex justify-between bg-gray-100">
+    <div className="w-full py-[20px] px-[200px] flex justify-between bg-gray-100">
       {/* 로고 */}
       <a href="/">
         <Image

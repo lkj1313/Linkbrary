@@ -96,7 +96,7 @@ const Login = () => {
             src="/logo.svg"
             alt="로고"
             onClick={handleNavigateHomePage}
-            className="w-[210px] h-[38px]"
+            className="w-[210px] h-[38px] cursor-pointer"
           />
 
           <div>

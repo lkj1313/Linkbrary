@@ -172,15 +172,15 @@ const LinksPage = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <main className="flex  flex-col gap-[40px] mb-5 justify-center items-center">
+      <section className="h-[219px] pt-[60px] pb-[90px] px-[320px] bg-gray-100 flex items-center justify-center ">
+        <AddLinkInput
+          inputLink={inputLink}
+          setInputLink={setInputLink}
+          handleAddLink={handleAddLink}
+        />
+      </section>
+      <main className="flex  flex-col gap-[40px] mb-5 justify-center items-center mt-4">
         {/* 폴더 목록 섹션 */}
-        <section className="h-[219px] pt-[60px] pb-[90px] px-[320px] bg-gray-100 flex items-center justify-center ">
-          <AddLinkInput
-            inputLink={inputLink}
-            setInputLink={setInputLink}
-            handleAddLink={handleAddLink}
-          />
-        </section>
         {/* 폴더 관리 섹션 */}
         <section className="w-[1060px]">
           <div className="w-full flex justify-between">

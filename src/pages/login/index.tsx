@@ -89,7 +89,9 @@ const Login = () => {
     <div className="h-screen relative w-screen bg-gray-100 flex flex-col items-center justify-center gap-[30px]">
       <div>
         <div className="flex flex-col gap-[16px] items-center">
-          <img src="/logo.svg" alt="로고" className="w-[210px] h-[38px]" />
+          <a href="/">
+            <img src="/logo.svg" alt="로고" className="w-[210px] h-[38px]" />
+          </a>
           <div>
             회원이 아니신가요?{" "}
             <button

@@ -21,6 +21,9 @@ const Login = () => {
   const handleNavigateSignupPage = () => {
     router.push("/signup");
   };
+  const handleNavigateHomePage = () => {
+    router.push("/");
+  };
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // 이메일 형식 정규식
@@ -89,9 +92,13 @@ const Login = () => {
     <div className="h-screen relative w-screen bg-gray-100 flex flex-col items-center justify-center gap-[30px]">
       <div>
         <div className="flex flex-col gap-[16px] items-center">
-          <a href="/">
-            <img src="/logo.svg" alt="로고" className="w-[210px] h-[38px]" />
-          </a>
+          <img
+            src="/logo.svg"
+            alt="로고"
+            onClick={handleNavigateHomePage}
+            className="w-[210px] h-[38px]"
+          />
+
           <div>
             회원이 아니신가요?{" "}
             <button

@@ -11,7 +11,9 @@ const Signup = () => {
   const router = useRouter();
 
   const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-
+  const handleNavigateHomePage = () => {
+    router.push("/");
+  };
   const [formValues, setFormValues] = useState({
     email: "",
     name: "",
@@ -84,9 +86,13 @@ const Signup = () => {
     <div className="h-screen w-screen bg-gray-100 flex flex-col items-center justify-center gap-[30px]">
       <div>
         <div className="flex flex-col gap-[16px] items-center">
-          <a href="/">
-            <img src="/logo.svg" alt="로고" className="w-[210px] h-[38px]" />
-          </a>
+          <img
+            src="/logo.svg"
+            alt="로고"
+            onClick={handleNavigateHomePage}
+            className="w-[210px] h-[38px]"
+          />
+
           <div>
             이미 회원이신가요?{" "}
             <button

@@ -1,12 +1,20 @@
 import Footer from "@/components/footer/Footer";
 import Header from "@/components/header/Header";
 import CommonButton from "@/components/button/CommonButton";
+import useAuthStore from "@/stores/authStore";
 import { useRouter } from "next/router";
 
 const LandingPage = () => {
   const router = useRouter();
+  const user = useAuthStore((state) => state.user);
+  console.log(user);
   const handleNavigate = () => {
-    router.push("/links");
+    if (user) {
+      router.push("/links");
+    } else {
+      alert("로그인이 필요합니다.");
+      router.push("/login"); // 로그인 페이지로 리디렉션
+    }
   };
   return (
     <div>
